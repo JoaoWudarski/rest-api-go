@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"rest-api-go/model"
 	"rest-api-go/usecase"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -45,4 +46,26 @@ func (p_controller *productController) Save(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, product)
+}
+
+func (p_controller *productController) FindById(ctx *gin.Context) {
+
+	id := ctx.Param("productId")
+	if id == "" {
+		ctx.JSON(http.StatusNotFound, nil)
+	}
+
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	product, err := p_controller.productUsecase.FindById(idInt)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, product)
 }

@@ -61,3 +61,23 @@ func (pRepository *ProductRepository) SaveProduct(product model.Product) (int, e
 
 	return id, nil
 }
+
+func (pRepository *ProductRepository) FindById(id int) (model.Product, error) {
+	query, err := pRepository.connection.Prepare("SELECT id, name, price FROM product WHERE id = $1")
+	if err != nil {
+		return model.Product{}, err
+	}
+
+	var product model.Product
+	err = query.QueryRow(id).Scan(&product.ID, &product.Name, &product.Price)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return model.Product{}, nil
+		}
+
+		return model.Product{}, err
+	}
+	query.Close()
+
+	return product, nil
+}
