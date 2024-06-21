@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  products_db_go:
+    container_name: db_go
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_USER: "admin"
+      POSTGRES_DB: "postgres"
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  products_pgadmin_db_go:
+    container_name: pgadmin_db_go
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+    ports:
+      - "16543:80"
+    depends_on:
+      - products_db_go
+
+volumes:
+  pgdata: {}
