@@ -45,3 +45,19 @@ func (pRepository *ProductRepository) GetAllProducts() ([]model.Product, error) 
 
 	return productList, nil
 }
+
+func (pRepository *ProductRepository) SaveProduct(product model.Product) (int, error) {
+	query, err := pRepository.connection.Prepare("INSERT INTO product(name, price) VALUES ($1, $2) RETURNING id")
+	if err != nil {
+		return -1, err
+	}
+
+	var id int
+	err = query.QueryRow(product.Name, product.Price).Scan(&id)
+	if err != nil {
+		return -1, err
+	}
+	query.Close()
+
+	return id, nil
+}
